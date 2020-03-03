@@ -8,10 +8,10 @@ _logger = logging.getLogger(__name__)
 
 
 def pre_init_hook(cr):
-    cr.execute('ALTER TABLE ir_cron'
-               'SET active=True;')
-    cr.execute('ALTER TABLE payment_acquirer'
-               'SET environment="test", authorize_login="dummy", authorize_transaction_key="dummy";')
+    cr.execute('UPDATE ir_cron '
+               'SET active=False;')
+    cr.execute("UPDATE payment_acquirer "
+               "SET environment='test', authorize_login='dummy', authorize_transaction_key='dummy';")
     
     env = api.Environment(cr, SUPERUSER_ID, {})
     google_drive = env['ir.module.module'].search([('name','=','google_drive_odoo'),('state','=','installed')],limit=1)
@@ -20,7 +20,7 @@ def pre_init_hook(cr):
             ('googledrive_client_id', str, ''),
             ('googledrive_client_secret', str, ''),
             ('googledrive_redirect_uri', str, 'http://localhost:8069/google_drive_token'),
-            ('googleteam_drive', safe_eval, False),
+            ('googleteam_drive', str, ''),
             ('googledrive_drive', str, 'My Drive'),
         )
         Config = env['ir.config_parameter']
@@ -30,7 +30,6 @@ def pre_init_hook(cr):
     
     sendgrid = env['ir.module.module'].search([('name','=','intel_mail_sendgrid'),('state','=','installed')],limit=1)
     if sendgrid:
-        cr.execute('ALTER TABLE res_company'
-               'SET sendgrid_email_validation_api_key="dummy", sendgrid_email_api_key="dummy", sendgrid_test_environment=True;')
-    
+        cr.execute("UPDATE res_company "
+               "SET sendgrid_email_validation_api_key='dummy', sendgrid_email_api_key='dummy', sendgrid_test_environment=True;")
     

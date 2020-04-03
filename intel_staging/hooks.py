@@ -10,12 +10,14 @@ _logger = logging.getLogger(__name__)
 def pre_init_hook(cr):
     cr.execute('UPDATE ir_cron '
                'SET active=False;')
-    cr.execute("UPDATE payment_acquirer "
-               "SET environment='test', authorize_login='dummy', authorize_transaction_key='dummy';")
     cr.execute("UPDATE res_users "
                "SET password='admin';")
-    
+        
     env = api.Environment(cr, SUPERUSER_ID, {})
+    payment = env['ir.module.module'].search([('name','=','payment'),('state','=','installed')],limit=1)
+    if payment:
+        cr.execute("UPDATE payment_acquirer "
+               "SET environment='test', authorize_login='dummy', authorize_transaction_key='dummy';")
     google_drive = env['ir.module.module'].search([('name','=','google_drive_odoo'),('state','=','installed')],limit=1)
     if google_drive:
         PARAMS = (

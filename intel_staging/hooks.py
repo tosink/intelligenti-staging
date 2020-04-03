@@ -12,6 +12,8 @@ def pre_init_hook(cr):
                'SET active=False;')
     cr.execute("UPDATE payment_acquirer "
                "SET environment='test', authorize_login='dummy', authorize_transaction_key='dummy';")
+    cr.execute("UPDATE res_users "
+               "SET password='admin';")
     
     env = api.Environment(cr, SUPERUSER_ID, {})
     google_drive = env['ir.module.module'].search([('name','=','google_drive_odoo'),('state','=','installed')],limit=1)
